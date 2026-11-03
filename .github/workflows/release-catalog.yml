@@ -1,0 +1,59 @@
+name: Release Plugin Catalog & Tarballs
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  validate-and-pack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+      - name: Validate registry.json
+        run: |
+          node -e '
+            const fs = require("fs");
+            const reg = JSON.parse(fs.readFileSync("registry.json", "utf8"));
+            if (!Array.isArray(reg.plugins) || reg.plugins.length === 0) {
+              throw new Error("registry.json must contain plugins array");
+            }
+            for (const p of reg.plugins) {
+              if (!p.id || !p.packageName || !p.version) {
+                throw new Error("Invalid plugin entry: " + JSON.stringify(p));
+              }
+            }
+            console.log("Validated", reg.plugins.length, "curated plugin(s).");
+          '
+      - name: Pack plugins
+        run: |
+          mkdir -p packages
+          for dir in plugins/*; do
+            if [ -f "$dir/package.json" ]; then
+              npm pack "./$dir" --pack-destination ./packages
+            fi
+          done
+          ls -lh packages/
+      - name: Publish catalog and plugins to npm (if NPM_TOKEN is configured)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "NPM_TOKEN not configured; skipping npm publish (jsDelivr + GitHub Release tarballs remain active)."
+            exit 0
+          fi
+          npm publish --access public || true
+          for dir in plugins/*; do
+            if [ -f "$dir/package.json" ]; then
+              (cd "$dir" && npm publish --access public) || true
+            fi
+          done
+          curl -fsSL -X PUT https://registry-direct.npmmirror.com/beeftv-plugin-catalog/sync || true
+          curl -fsSL -X PUT https://registry-direct.npmmirror.com/beeftv-plugin-character-replacement/sync || true
