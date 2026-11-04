@@ -102,23 +102,39 @@ async function resolveActiveCanvasIdAsync(host, explicitCanvasId) {
 
 async function createInitialCanvasDocument(host, canvasId, title) {
   const now = new Date().toISOString();
+  const doc = {
+    id: canvasId,
+    title,
+    revision: 0,
+    createdAt: now,
+    updatedAt: now,
+    nodes: [],
+    connections: [],
+    chatSessions: [],
+    activeChatId: null,
+    backgroundMode: "grid",
+    showImageInfo: true,
+    viewport: { x: 120, y: 120, zoom: 1 },
+    directorScenes: [],
+  };
+  if (typeof fetch === "function") {
+    try {
+      const resp = await fetch(`/api/canvas-projects/${encodeURIComponent(canvasId)}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ project: doc }),
+      });
+      if (resp.ok) {
+        return await resp.json();
+      }
+    } catch {
+      // fall through to ops.call in unit test environments
+    }
+  }
   return host.ops.call("canvas.document.commit", {
     canvasId,
     expectedRevision: 0,
-    document: {
-      id: canvasId,
-      title,
-      createdAt: now,
-      updatedAt: now,
-      nodes: [],
-      connections: [],
-      chatSessions: [],
-      activeChatId: null,
-      backgroundMode: "grid",
-      showImageInfo: true,
-      viewport: { x: 120, y: 120, zoom: 1 },
-      directorScenes: [],
-    },
+    document: doc,
   });
 }
 

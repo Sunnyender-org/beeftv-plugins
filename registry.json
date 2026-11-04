@@ -16,7 +16,7 @@
       "readme": "https://raw.githubusercontent.com/Sunnyender-org/beeftv-plugins/main/plugins/beeftv-plugin-character-replacement/README.md",
       "tarball": "https://github.com/Sunnyender-org/beeftv-plugins/releases/download/v0.1.1/beeftv-plugin-character-replacement-0.1.1.tgz",
       "mirrorTarball": "https://cdn.jsdelivr.net/gh/Sunnyender-org/beeftv-plugins@v0.1.1/packages/beeftv-plugin-character-replacement-0.1.1.tgz",
-      "sha256": "7dfca842efbbb5950d44093512f9db14488a0b67440ebf45c88334a1d7b6ba90",
+      "sha256": "fe170faafbe8a59865e5099258b4fdbbbda838dec5a464742d79d53a53c1c9ee",
       "tags": [
         "画布节点",
         "角色替换",
