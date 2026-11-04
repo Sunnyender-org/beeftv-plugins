@@ -54,13 +54,16 @@ function resolveActiveCanvasId(host, explicitCanvasId) {
     rememberCanvasId(host, fromContext);
     return fromContext;
   }
-  const rawStorage = host?.storage?.get?.("lastCanvasId");
-  if (typeof rawStorage === "string") {
-    const clean = rawStorage.trim();
-    if (clean && clean !== "[object Promise]") {
-      lastKnownCanvasId = clean;
-      return clean;
+  if (typeof host?.storage?.get === "function") {
+    const rawStorage = host.storage.get("lastCanvasId");
+    if (typeof rawStorage === "string") {
+      const clean = rawStorage.trim();
+      if (clean && clean !== "[object Promise]") {
+        lastKnownCanvasId = clean;
+        return clean;
+      }
     }
+    return "";
   }
   return lastKnownCanvasId;
 }
