@@ -80,23 +80,6 @@ async function resolveActiveCanvasIdAsync(host, explicitCanvasId) {
   } catch {
     // ignore storage read error
   }
-  if (typeof host?.ops?.call === "function") {
-    try {
-      const searchRes = await host.ops.call("canvas.search", { page: 1, pageSize: 5 });
-      const list = Array.isArray(searchRes?.items)
-        ? searchRes.items
-        : Array.isArray(searchRes?.canvases)
-          ? searchRes.canvases
-          : [];
-      const firstId = String(list[0]?.id || list[0]?.canvasId || "").trim();
-      if (firstId && firstId !== "[object Promise]") {
-        rememberCanvasId(host, firstId);
-        return firstId;
-      }
-    } catch {
-      // ignore search fallback error
-    }
-  }
   return "";
 }
 
@@ -117,20 +100,6 @@ async function createInitialCanvasDocument(host, canvasId, title) {
     viewport: { x: 120, y: 120, zoom: 1 },
     directorScenes: [],
   };
-  if (typeof fetch === "function") {
-    try {
-      const resp = await fetch(`/api/canvas-projects/${encodeURIComponent(canvasId)}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ project: doc }),
-      });
-      if (resp.ok) {
-        return await resp.json();
-      }
-    } catch {
-      // fall through to ops.call in unit test environments
-    }
-  }
   return host.ops.call("canvas.document.commit", {
     canvasId,
     expectedRevision: 0,
@@ -239,6 +208,9 @@ export async function arrangeCharacterReplacementOnCanvas(host, config = {}) {
         if (slot === "sourceVideo") sourceVideoNodeId = createdId;
       });
       missingReferences.length = 0;
+      if (!sourceKeyframeNodeId) missingReferences.push("sourceKeyframeNodeId（原关键帧图节点）");
+      if (!targetCharacterNodeId) missingReferences.push("targetCharacterNodeId（目标角色参考图节点）");
+      if (!sourceVideoNodeId) missingReferences.push("sourceVideoNodeId（原镜头视频节点）");
     }
   }
 
@@ -947,11 +919,7 @@ export function activate(host) {
         if (res.sourceKeyframeNodeId) setSourceKeyframeNodeId(res.sourceKeyframeNodeId);
         if (res.targetCharacterNodeId) setTargetCharacterNodeId(res.targetCharacterNodeId);
         if (res.locationGuideNodeId) setLocationGuideNodeId(res.locationGuideNodeId);
-        if (res.sourceVideoNodeId) {
-          setSourceVideoNodeId(res.sourceVideoNodeId);
-          setFullVideoNodeId((prev) => prev || res.sourceVideoNodeId);
-        }
-        setFullDurationSec((prev) => prev || "10");
+        if (res.sourceVideoNodeId) setSourceVideoNodeId(res.sourceVideoNodeId);
         setReplacedVideoNodeId(res.videoNodeId);
         const hasMissing = res.missingReferences?.length > 0;
         const warnText = hasMissing
