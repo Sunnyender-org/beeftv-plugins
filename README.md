@@ -22,7 +22,13 @@
 
 | 插件 ID | 名称 | 版本 | 说明 |
 | --- | --- | --- | --- |
-| `beeftv-plugin-character-replacement` | AI 角色替换工作室 | `0.1.0` | 面向短剧与漫剧的二阶段角色替换插件：关键帧角色替换（含 SVG 框位图引导）+ 视频角色替换（`replace_element`）+ 全片时间轴回插 |
+| `beeftv-plugin-character-replacement` | AI 角色替换工作室 | `0.1.5` | 面向短剧与漫剧的二阶段角色替换插件：关键帧角色替换（含 SVG 框位图引导）+ 视频角色替换（`replace_element`）+ 全片时间轴回插 |
+| `beeftv-plugin-comfyui` | ComfyUI | `0.1.0` | 把本机或局域网里的 ComfyUI 接进 BeefTV，保存的工作流就是模型 |
+| `beeftv-plugin-runninghub` | RunningHub | `0.1.0` | 把 RunningHub 接进 BeefTV，工作流和 AI 应用就是模型 |
+
+## 修改插件
+
+插件源码都在 `plugins/` 下，发现问题或想加功能，直接向对应目录提 PR。合并后由维护者打包发版，用户会在 BeefTV 里收到更新。
 
 ## 开发者样板插件（位于 `plugins/`，不在精选推荐默认展示）
 
