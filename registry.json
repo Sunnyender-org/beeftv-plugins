@@ -70,6 +70,48 @@
         "视频",
         "音频"
       ]
+    },
+    {
+      "id": "beeftv-plugin-sticky-note",
+      "packageName": "beeftv-plugin-sticky-note",
+      "npm": "beeftv-plugin-sticky-note",
+      "name": "画布便签",
+      "version": "0.1.1",
+      "description": "在画布上放置可换色、可编辑的便签卡片，并支持创作助手直接创建和修改便签。",
+      "author": "BeefTV",
+      "category": "画布工具",
+      "recommended": true,
+      "repo": "https://github.com/Sunnyender-org/beeftv-plugins/tree/main/plugins/beeftv-plugin-sticky-note",
+      "readme": "https://raw.githubusercontent.com/Sunnyender-org/beeftv-plugins/main/plugins/beeftv-plugin-sticky-note/README.md",
+      "tarball": "https://github.com/Sunnyender-org/beeftv-plugins/releases/download/v0.2.0/beeftv-plugin-sticky-note-0.1.1.tgz",
+      "mirrorTarball": "https://cdn.jsdelivr.net/gh/Sunnyender-org/beeftv-plugins@v0.2.0/dist/beeftv-plugin-sticky-note-0.1.1.tgz",
+      "sha256": "4e30e3ff4b8e0208f27ef6e21632fb3bda3c29264053cb6bd7f6879003ac640b",
+      "tags": [
+        "画布节点",
+        "便签",
+        "助手工具"
+      ]
+    },
+    {
+      "id": "beeftv-plugin-ecommerce-hero",
+      "packageName": "beeftv-plugin-ecommerce-hero",
+      "npm": "beeftv-plugin-ecommerce-hero",
+      "name": "一键商品主图",
+      "version": "0.1.1",
+      "description": "上传商品图并选择需要生成的场景图张数，一键创建电商主图生成节点或由创作助手自动编排。",
+      "author": "BeefTV",
+      "category": "电商创作",
+      "recommended": true,
+      "repo": "https://github.com/Sunnyender-org/beeftv-plugins/tree/main/plugins/beeftv-plugin-ecommerce-hero",
+      "readme": "https://raw.githubusercontent.com/Sunnyender-org/beeftv-plugins/main/plugins/beeftv-plugin-ecommerce-hero/README.md",
+      "tarball": "https://github.com/Sunnyender-org/beeftv-plugins/releases/download/v0.2.0/beeftv-plugin-ecommerce-hero-0.1.1.tgz",
+      "mirrorTarball": "https://cdn.jsdelivr.net/gh/Sunnyender-org/beeftv-plugins@v0.2.0/dist/beeftv-plugin-ecommerce-hero-0.1.1.tgz",
+      "sha256": "97c98858d0aa6abebe7608db54f9097c452bcef149804ac844345eb796d93230",
+      "tags": [
+        "画布节点",
+        "商品主图",
+        "助手工具"
+      ]
     }
   ]
 }
