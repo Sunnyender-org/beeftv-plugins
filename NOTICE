@@ -1,0 +1,38 @@
+BeefTV Official & Community Plugin Registry (beeftv-plugins)
+Copyright 2026 @beefnoode and BeefTV contributors
+
+Repository catalog metadata (`registry.json`, `package.json`, `README.md`) and
+BeefTV-authored plugins in this repository are licensed under the Apache
+License, Version 2.0 (see `LICENSE` at the repository root and inside each
+Apache-2.0 plugin directory).
+
+If an individual community plugin directory under `plugins/` carries a
+different license in its own `package.json` and `LICENSE` file (for example,
+MIT-licensed community plugins), that plugin's own license governs that
+subdirectory, while `THIRD_PARTY_NOTICES.md` records third-party material
+incorporated within a plugin without altering the plugin's own license.
+
+Note on release tarballs: `registry.json` currently pins `v0.2.0` release
+tarballs (`@v0.2.0` and `releases/download/v0.2.0/*`) with immutable SHA-256
+checksums; per-plugin `LICENSE` files added in `plugins/*/` take effect in
+newly packed tarballs starting from the next catalog release tag.
+
+Third-party attributions in current plugins
+-------------------------------------------
+
+- Node Banana (https://github.com/shrimbly/node-banana)
+  Copyright (c) 2026 William Falloon (MIT License)
+  Workflow conversion, App Mode reading, and node classification helpers in
+  `plugins/beeftv-plugin-comfyui` and `plugins/beeftv-plugin-runninghub` are
+  adapted from Node Banana. Full MIT permission notices are preserved in each
+  plugin directory's `THIRD_PARTY_NOTICES.md`.
+
+Community plugin migration attributions
+---------------------------------------
+
+- 影策 Open AI Canvas (https://github.com/ddcat-ai/open-ai-canvas)
+  Copyright (c) 2026 ddcat and Open AI Canvas contributors (MIT License)
+  Community plugins migrated into `plugins/` from Open AI Canvas retain their
+  MIT License (`license: "MIT"` and per-plugin `LICENSE` containing the
+  complete original copyright and permission notice) and upstream author
+  attributions (`开源社区`) in their plugin directories and manifests.

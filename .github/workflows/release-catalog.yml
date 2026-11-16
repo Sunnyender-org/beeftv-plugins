@@ -37,7 +37,18 @@ jobs:
           mkdir -p packages
           for dir in plugins/*; do
             if [ -f "$dir/package.json" ]; then
-              npm pack "./$dir" --pack-destination ./packages
+              test -f "$dir/LICENSE" || { echo "missing LICENSE in $dir" >&2; exit 1; }
+              tgz=$(npm pack "./$dir" --pack-destination ./packages | tail -n 1)
+              tar -tzf "./packages/$tgz" | grep -qx "package/LICENSE" || {
+                echo "packed tarball $tgz is missing package/LICENSE" >&2
+                exit 1
+              }
+              if [ -f "$dir/THIRD_PARTY_NOTICES.md" ]; then
+                tar -tzf "./packages/$tgz" | grep -qx "package/THIRD_PARTY_NOTICES.md" || {
+                  echo "packed tarball $tgz is missing package/THIRD_PARTY_NOTICES.md" >&2
+                  exit 1
+                }
+              fi
             fi
           done
           ls -lh packages/

@@ -13,6 +13,8 @@
   ],
   "files": [
     "registry.json",
-    "README.md"
+    "README.md",
+    "LICENSE",
+    "NOTICE"
   ]
 }

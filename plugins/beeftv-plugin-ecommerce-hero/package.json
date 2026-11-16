@@ -77,7 +77,8 @@
     "extensions",
     "skills",
     "client",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "author": "BeefTV"
 }
