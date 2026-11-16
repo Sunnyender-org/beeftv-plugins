@@ -49,7 +49,8 @@
     "provider.mjs",
     "lib",
     "README.md",
-    "THIRD_PARTY_NOTICES.md"
+    "THIRD_PARTY_NOTICES.md",
+    "LICENSE"
   ],
   "author": "BeefTV"
 }
