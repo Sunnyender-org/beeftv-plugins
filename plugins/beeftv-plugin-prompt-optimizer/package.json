@@ -1,0 +1,32 @@
+{
+  "name": "beeftv-plugin-prompt-optimizer",
+  "version": "0.3.1",
+  "description": "把模糊的生图想法整理成可执行、可比较、适配当前模型的提示词。",
+  "author": "开源社区",
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://github.com/Sunnyender-org/beeftv-plugins/tree/main/plugins/beeftv-plugin-prompt-optimizer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sunnyender-org/beeftv-plugins.git",
+    "directory": "plugins/beeftv-plugin-prompt-optimizer"
+  },
+  "keywords": [
+    "beeftv-plugin",
+    "pi-package",
+    "prompt-optimizer",
+    "prompt"
+  ],
+  "beeftv": {
+    "name": "AI 提示词优化器",
+    "client": "./client/index.js",
+    "permissions": [
+      "ai.text"
+    ]
+  },
+  "files": [
+    "client",
+    "README.md",
+    "LICENSE"
+  ]
+}

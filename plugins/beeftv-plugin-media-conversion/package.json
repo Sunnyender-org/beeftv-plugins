@@ -1,0 +1,57 @@
+{
+  "name": "beeftv-plugin-media-conversion",
+  "version": "0.2.0",
+  "description": "在画布中提供图片和视频首帧转换节点，支持灰度、Canny 边缘、AI 线稿、深度图和 OpenPose 姿态骨架。",
+  "author": "开源社区",
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://github.com/Sunnyender-org/beeftv-plugins/tree/main/plugins/beeftv-plugin-media-conversion",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sunnyender-org/beeftv-plugins.git",
+    "directory": "plugins/beeftv-plugin-media-conversion"
+  },
+  "keywords": [
+    "beeftv-plugin",
+    "pi-package",
+    "media-conversion",
+    "canvas-node"
+  ],
+  "beeftv": {
+    "name": "媒体转换节点",
+    "client": "./client/index.js",
+    "surfaces": [
+      "node"
+    ],
+    "permissions": [
+      "canvas.read",
+      "canvas.write",
+      "media.read"
+    ],
+    "contributes": {
+      "canvasNodes": [
+        {
+          "id": "media-conversion",
+          "label": "转换",
+          "defaultTitle": "转换",
+          "defaultSize": {
+            "width": 420,
+            "height": 380
+          },
+          "renderer": "client",
+          "acceptsInputKind": [
+            "image",
+            "video"
+          ],
+          "maxInputCount": 1,
+          "showOutputConnection": true
+        }
+      ]
+    }
+  },
+  "files": [
+    "client",
+    "README.md",
+    "LICENSE"
+  ]
+}

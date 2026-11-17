@@ -12,10 +12,10 @@ MIT-licensed community plugins), that plugin's own license governs that
 subdirectory, while `THIRD_PARTY_NOTICES.md` records third-party material
 incorporated within a plugin without altering the plugin's own license.
 
-Note on release tarballs: `registry.json` currently pins `v0.2.0` release
-tarballs (`@v0.2.0` and `releases/download/v0.2.0/*`) with immutable SHA-256
-checksums; per-plugin `LICENSE` files added in `plugins/*/` take effect in
-newly packed tarballs starting from the next catalog release tag.
+Release tarballs from `v0.3.0` onward (`@v0.3.0` and
+`releases/download/v0.3.0/*` in `registry.json`) bundle each plugin's own
+`LICENSE` (and `THIRD_PARTY_NOTICES.md` where applicable) verified by SHA-256
+checksums.
 
 Third-party attributions in current plugins
 -------------------------------------------
@@ -30,9 +30,11 @@ Third-party attributions in current plugins
 Community plugin migration attributions
 ---------------------------------------
 
-- 影策 Open AI Canvas (https://github.com/ddcat-ai/open-ai-canvas)
+- Open AI Canvas (https://github.com/ddcat-ai/open-ai-canvas)
   Copyright (c) 2026 ddcat and Open AI Canvas contributors (MIT License)
-  Community plugins migrated into `plugins/` from Open AI Canvas retain their
+  Community plugins migrated into `plugins/` (`beeftv-plugin-prompt-optimizer`,
+  `beeftv-plugin-eagle-asset-connector`, `beeftv-plugin-ai-art-critique`,
+  `beeftv-plugin-media-conversion`) retain their
   MIT License (`license: "MIT"` and per-plugin `LICENSE` containing the
   complete original copyright and permission notice) and upstream author
   attributions (`开源社区`) in their plugin directories and manifests.

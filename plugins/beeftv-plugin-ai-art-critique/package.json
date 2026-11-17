@@ -1,0 +1,65 @@
+{
+  "name": "beeftv-plugin-ai-art-critique",
+  "version": "0.2.0",
+  "description": "分析图片的构图、色彩、光线和比例问题，输出结构化批改报告与可视化标注。",
+  "author": "开源社区",
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://github.com/Sunnyender-org/beeftv-plugins/tree/main/plugins/beeftv-plugin-ai-art-critique",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sunnyender-org/beeftv-plugins.git",
+    "directory": "plugins/beeftv-plugin-ai-art-critique"
+  },
+  "keywords": [
+    "beeftv-plugin",
+    "pi-package",
+    "art-critique",
+    "canvas-node"
+  ],
+  "beeftv": {
+    "name": "AI 审美批改",
+    "client": "./client/index.js",
+    "surfaces": [
+      "node",
+      "fullscreen"
+    ],
+    "permissions": [
+      "canvas.read",
+      "canvas.write",
+      "media.read",
+      "ai.text",
+      "generation.run"
+    ],
+    "contributes": {
+      "canvasNodes": [
+        {
+          "id": "ai-art-critique",
+          "label": "AI 审美批改",
+          "defaultTitle": "AI 审美批改",
+          "defaultSize": {
+            "width": 560,
+            "height": 420
+          },
+          "schema": {
+            "type": "object",
+            "properties": {
+              "artCritique": {
+                "type": "object"
+              }
+            }
+          },
+          "renderer": "client",
+          "acceptsInputKind": "image",
+          "maxInputCount": 1,
+          "showOutputConnection": false
+        }
+      ]
+    }
+  },
+  "files": [
+    "client",
+    "README.md",
+    "LICENSE"
+  ]
+}

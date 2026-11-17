@@ -17,20 +17,37 @@ jobs:
         with:
           node-version: "22"
           registry-url: "https://registry.npmjs.org"
-      - name: Validate registry.json
+      - name: Run plugin tests
+        run: npm test
+      - name: Validate registry.json & dist SHA-256
         run: |
           node -e '
             const fs = require("fs");
+            const crypto = require("crypto");
+            const path = require("path");
             const reg = JSON.parse(fs.readFileSync("registry.json", "utf8"));
             if (!Array.isArray(reg.plugins) || reg.plugins.length === 0) {
               throw new Error("registry.json must contain plugins array");
             }
             for (const p of reg.plugins) {
-              if (!p.id || !p.packageName || !p.version) {
+              if (!p.id || !p.packageName || !p.version || !p.sha256 || !p.tarball) {
                 throw new Error("Invalid plugin entry: " + JSON.stringify(p));
               }
+              const pkgPath = path.join("plugins", p.packageName, "package.json");
+              const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+              if (pkg.beeftv?.id) {
+                throw new Error(`${pkgPath} must not set beeftv.id`);
+              }
+              if (pkg.name !== p.packageName || pkg.name !== p.id || pkg.version !== p.version) {
+                throw new Error(`Registry mismatch for ${p.id}: ${pkg.name}@${pkg.version}`);
+              }
+              const tgzPath = path.join("dist", `${p.packageName}-${p.version}.tgz`);
+              const sha = crypto.createHash("sha256").update(fs.readFileSync(tgzPath)).digest("hex");
+              if (sha !== p.sha256) {
+                throw new Error(`SHA-256 mismatch for ${tgzPath}: ${sha} !== ${p.sha256}`);
+              }
             }
-            console.log("Validated", reg.plugins.length, "curated plugin(s).");
+            console.log("Validated", reg.plugins.length, "curated plugin(s) and dist tarballs.");
           '
       - name: Pack plugins
         run: |
@@ -49,10 +66,22 @@ jobs:
                   exit 1
                 }
               fi
+              test -f "./dist/$tgz" || {
+                echo "missing committed tarball ./dist/$tgz" >&2
+                exit 1
+              }
+              diff -u <(tar -tzf "./packages/$tgz" | LC_ALL=C sort) <(tar -tzf "./dist/$tgz" | LC_ALL=C sort) || {
+                echo "committed dist/$tgz file list differs from freshly packed tarball" >&2
+                exit 1
+              }
+              diff -u <(tar -xOzf "./packages/$tgz" package/package.json) <(tar -xOzf "./dist/$tgz" package/package.json) || {
+                echo "committed dist/$tgz package.json is stale" >&2
+                exit 1
+              }
             fi
           done
           ls -lh packages/
-      - name: Publish catalog and plugins to npm (if NPM_TOKEN is configured)
+      - name: Publish catalog and npm-listed plugins (if NPM_TOKEN is configured)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
@@ -60,11 +89,19 @@ jobs:
             echo "NPM_TOKEN not configured; skipping npm publish (jsDelivr + GitHub Release tarballs remain active)."
             exit 0
           fi
-          npm publish --access public || true
-          for dir in plugins/*; do
-            if [ -f "$dir/package.json" ]; then
-              (cd "$dir" && npm publish --access public) || true
+          root_ver=$(node -e 'console.log(JSON.parse(require("fs").readFileSync("package.json", "utf8")).version)')
+          if ! npm view "beeftv-plugin-catalog@${root_ver}" version >/dev/null 2>&1; then
+            npm publish --access public
+            curl -fsSL -X PUT https://registry-direct.npmmirror.com/beeftv-plugin-catalog/sync || true
+          fi
+          node -e '
+            const reg = JSON.parse(require("fs").readFileSync("registry.json", "utf8"));
+            for (const p of reg.plugins) {
+              if (p.npm) console.log(`${p.packageName}\t${p.version}`);
+            }
+          ' | while IFS="$(printf "\t")" read -r pkg ver; do
+            if ! npm view "${pkg}@${ver}" version >/dev/null 2>&1; then
+              (cd "plugins/$pkg" && npm publish --access public)
+              curl -fsSL -X PUT "https://registry-direct.npmmirror.com/${pkg}/sync" || true
             fi
           done
-          curl -fsSL -X PUT https://registry-direct.npmmirror.com/beeftv-plugin-catalog/sync || true
-          curl -fsSL -X PUT https://registry-direct.npmmirror.com/beeftv-plugin-character-replacement/sync || true
