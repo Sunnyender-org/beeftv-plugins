@@ -1,0 +1,51 @@
+{
+  "name": "beeftv-plugin-eagle-asset-connector",
+  "version": "0.3.1",
+  "description": "把 Eagle 作为站点的外部素材来源，直接浏览原始文件夹并读写 Eagle 文件。",
+  "author": "开源社区",
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://github.com/Sunnyender-org/beeftv-plugins/tree/main/plugins/beeftv-plugin-eagle-asset-connector",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sunnyender-org/beeftv-plugins.git",
+    "directory": "plugins/beeftv-plugin-eagle-asset-connector"
+  },
+  "keywords": [
+    "beeftv-plugin",
+    "pi-package",
+    "eagle",
+    "assets"
+  ],
+  "beeftv": {
+    "name": "Eagle 素材库",
+    "client": "./client/index.js",
+    "permissions": [
+      "asset.read",
+      "asset.search",
+      "asset.upload",
+      "external.open"
+    ],
+    "configuration": {
+      "fields": [
+        {
+          "name": "baseUrl",
+          "type": "url",
+          "label": "Eagle Base URL",
+          "required": true,
+          "default": "http://127.0.0.1:41595"
+        },
+        {
+          "name": "generatedFolderId",
+          "type": "string",
+          "label": "默认写入文件夹"
+        }
+      ]
+    }
+  },
+  "files": [
+    "client",
+    "README.md",
+    "LICENSE"
+  ]
+}

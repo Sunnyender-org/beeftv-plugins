@@ -1,6 +1,6 @@
 {
   "name": "beeftv-plugin-ecommerce-hero",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "上传商品图并选择需要生成的场景图张数，一键创建电商主图生成节点或由创作助手自动编排。",
   "type": "module",
   "license": "Apache-2.0",

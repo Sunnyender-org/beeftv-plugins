@@ -8,8 +8,47 @@
 // /object_info 节点目录，按每个节点声明输入的顺序把值对回名字。子图会被展开，
 // 里面的节点 ID 写成 `实例:内部`，和 ComfyUI 自己导出 API 格式时一致。
 
-// 只在界面上存在、执行时不需要的节点。PrimitiveNode 的值由前端直接写进它连着的控件。
-const COSMETIC_TYPES = new Set(["Note", "MarkdownNote", "Reroute", "PrimitiveNode"]);
+// 只在界面上存在、执行时不需要的节点。PrimitiveNode 的值由前端直接写进它连着的控件；
+// Reroute / rgthree 标牌与开关 / KJNodes 与 easy-use 无线节点只负责界面连线与分组控制。
+const REROUTE_TYPES = new Set(["Reroute", "Reroute (rgthree)", "ReroutePrimitive"]);
+const SET_NODE_TYPES = new Set(["SetNode", "easy setNode"]);
+const GET_NODE_TYPES = new Set(["GetNode", "easy getNode"]);
+const COSMETIC_TYPES = new Set([
+  "Note",
+  "MarkdownNote",
+  "PrimitiveNode",
+  "Label (rgthree)",
+  "Bookmark (rgthree)",
+  "Fast Groups Muter (rgthree)",
+  "Fast Groups Bypasser (rgthree)",
+  "Fast Actions Button (rgthree)",
+  "Fast Muter (rgthree)",
+  "Fast Bypasser (rgthree)",
+  ...REROUTE_TYPES,
+  ...SET_NODE_TYPES,
+  ...GET_NODE_TYPES,
+]);
+
+function wirelessVarName(node) {
+  if (Array.isArray(node.widgets_values) && typeof node.widgets_values[0] === "string") {
+    return node.widgets_values[0].trim();
+  }
+  if (node.widgets_values && typeof node.widgets_values === "object") {
+    for (const key of ["Constant", "name", "value"]) {
+      if (typeof node.widgets_values[key] === "string") return node.widgets_values[key].trim();
+    }
+  }
+  return "";
+}
+
+function findWirelessSetter(scope, name) {
+  if (!name) return null;
+  for (let current = scope; current; current = current.parent) {
+    const setter = current.wirelessSetters?.get(name);
+    if (setter) return { scope: current, node: setter };
+  }
+  return null;
+}
 
 const SEED_CONTROL_VALUES = new Set(["fixed", "increment", "decrement", "randomize"]);
 
@@ -81,7 +120,7 @@ function assignWidgetValues(inputs, entries, values, state, connectionNames, fix
       continue;
     }
 
-    if (typeof type === "string" && (type.startsWith("COMFY_AUTOGROW_") || type.startsWith("COMFY_MATCHTYPE_"))) {
+    if (typeof type === "string" && (type.startsWith("COMFY_AUTOGROW_") || type.startsWith("COMFY_MATCHTYPE_") || type === "AUDIOUI" || type === "IMAGEUPLOAD")) {
       continue;
     }
 
@@ -100,7 +139,9 @@ function assignWidgetValues(inputs, entries, values, state, connectionNames, fix
       state.i += 1;
     }
     // 上传控件后面跟着一个占位值。
-    if (opts.image_upload === true && values[state.i] === "image") state.i += 1;
+    if ((opts.image_upload === true || opts.audio_upload === true || opts.video_upload === true) && typeof values[state.i] === "string" && ["image", "audio", "video"].includes(values[state.i])) {
+      state.i += 1;
+    }
   }
 }
 
@@ -150,6 +191,7 @@ function buildScope(nodes, links, defs, prefix, parent, instance, def, depth) {
     links: normalizeLinks(links),
     boundaryOwner: new Map(),
     boundaryWidgetValue: new Map(),
+    wirelessSetters: new Map(),
     instance,
     def,
     parent,
@@ -158,7 +200,7 @@ function buildScope(nodes, links, defs, prefix, parent, instance, def, depth) {
   for (const [slot, input] of (def?.inputs ?? []).entries()) {
     for (const linkId of input.linkIds ?? []) scope.boundaryOwner.set(linkId, slot);
   }
-  // 子图实例上提出来的控件值按子图定义里「接到控件上的边界口」排序，
+  // 子图实例上提出来的控件值按子图定义里「接到控件上的子图端口」排序，
   // 不按实例的 inputs 排：实例只列出作者连过或改过的口，两边长度和顺序常常对不上。
   if (instance && Array.isArray(instance.widgets_values)) {
     const values = instance.widgets_values;
@@ -167,6 +209,10 @@ function buildScope(nodes, links, defs, prefix, parent, instance, def, depth) {
     });
   }
   for (const node of nodes) {
+    if (node.mode !== 2 && node.mode !== 4 && SET_NODE_TYPES.has(node.type)) {
+      const varName = wirelessVarName(node);
+      if (varName) scope.wirelessSetters.set(varName, node);
+    }
     const childDef = defs.get(String(node.type));
     if (childDef) {
       scope.children.set(
@@ -195,7 +241,7 @@ function widgetBackedSlots(def) {
 
 function resolveLinkId(scope, linkId, depth) {
   if (depth > 100) return null;
-  // 从子图边界口出来的连线到上一层去找来源；实例只列出用过的口，按名字对。
+  // 从子图子图端口出来的连线到上一层去找来源；实例只列出用过的口，按名字对。
   const boundarySlot = scope.boundaryOwner.get(linkId);
   if (boundarySlot !== undefined) {
     const boundaryName = scope.def?.inputs?.[boundarySlot]?.name;
@@ -222,9 +268,14 @@ function resolveOrigin(scope, originId, slot, depth) {
   }
   const node = scope.nodes.get(originId);
   if (!node) return null;
-  if (node.type === "Reroute") {
+  if (REROUTE_TYPES.has(node.type) || SET_NODE_TYPES.has(node.type)) {
     const upstream = node.inputs?.[0]?.link;
     return upstream == null ? null : resolveLinkId(scope, upstream, depth + 1);
+  }
+  if (GET_NODE_TYPES.has(node.type)) {
+    const setter = findWirelessSetter(scope, wirelessVarName(node));
+    const upstream = setter?.node.inputs?.[0]?.link;
+    return upstream == null ? null : resolveLinkId(setter.scope, upstream, depth + 1);
   }
   if (node.type === "PrimitiveNode") {
     const value = Array.isArray(node.widgets_values) ? node.widgets_values[0] : undefined;
@@ -260,6 +311,7 @@ export function convertEditorGraph(file, objectInfo) {
   const root = buildScope(file.nodes, file.links, defs, "", null, null, null, 0);
   const graph = {};
   const fixedSeeds = new Set();
+  const comboOptions = {};
 
   const emitScope = (scope) => {
     for (const node of scope.nodes.values()) {
@@ -295,6 +347,8 @@ export function convertEditorGraph(file, objectInfo) {
         for (const name of seeds) fixedSeeds.add(`${key}.${name}`);
       }
 
+      collectNodeComboOptions(node.type, key, objectInfo, comboOptions, api.inputs);
+
       // 连线覆盖控件上的占位值。
       for (const input of node.inputs ?? []) {
         if (input.link == null) continue;
@@ -323,7 +377,51 @@ export function convertEditorGraph(file, objectInfo) {
   }
 
   if (Object.keys(graph).length === 0) throw new ComfyConversionError("这个工作流里没有能执行的节点");
-  return { graph, fixedSeeds };
+  return { graph, fixedSeeds, comboOptions };
+}
+
+function collectEntriesComboOptions(entries, keyPrefix, comboOptions, nodeInputs, inputPrefix = "") {
+  for (const { name, spec } of entries) {
+    const type = spec[0];
+    const opts = specOptions(spec);
+    const widgetName = `${inputPrefix}${name}`;
+    const fullKey = `${keyPrefix}.${widgetName}`;
+    if (Array.isArray(type)) {
+      comboOptions[fullKey] = type.map(String);
+    } else if (type === "COMBO" && Array.isArray(opts.options)) {
+      comboOptions[fullKey] = opts.options.map(String);
+    } else if (typeof type === "string" && type.startsWith("COMFY_DYNAMICCOMBO_") && Array.isArray(opts.options)) {
+      comboOptions[fullKey] = opts.options.map((opt) =>
+        opt !== null && typeof opt === "object" ? String(opt.key ?? "") : String(opt),
+      ).filter(Boolean);
+      const selected = nodeInputs?.[widgetName];
+      const matchingOptions = selected !== undefined
+        ? opts.options.filter((opt) => opt !== null && typeof opt === "object" && opt.key === selected)
+        : opts.options.filter((opt) => opt !== null && typeof opt === "object");
+      for (const option of matchingOptions) {
+        if (option?.inputs) {
+          collectEntriesComboOptions(specEntries(option.inputs), keyPrefix, comboOptions, nodeInputs, `${widgetName}.`);
+        }
+      }
+    }
+  }
+}
+
+function collectNodeComboOptions(classType, keyPrefix, objectInfo, comboOptions, nodeInputs) {
+  collectEntriesComboOptions(specEntries(objectInfo?.[classType]?.input), keyPrefix, comboOptions, nodeInputs);
+}
+
+export function collectGraphComboOptions(graph, objectInfo) {
+  const comboOptions = {};
+  if (!graph || typeof graph !== "object" || !objectInfo || typeof objectInfo !== "object") {
+    return comboOptions;
+  }
+  for (const [id, node] of Object.entries(graph)) {
+    const classType = String(node?.class_type ?? "").trim();
+    if (!classType || !objectInfo[classType]?.input) continue;
+    collectNodeComboOptions(classType, id, objectInfo, comboOptions, node.inputs);
+  }
+  return comboOptions;
 }
 
 /** 界面格式里需要查节点目录的节点类型，用来一次说清缺哪些节点包。 */
@@ -416,7 +514,7 @@ function consumersOf(def, nodeId) {
   return bindings;
 }
 
-// 子图实例上提出来的控件，落到展开后真正的节点上；一个边界口可能同时接好几个节点。
+// 子图实例上提出来的控件，落到展开后真正的节点上；一个子图端口可能同时接好几个节点。
 function resolveProxied(file, def, prefix, innerId, widget, depth = 0) {
   if (!def || depth > MAX_PROXY_DEPTH) return [];
   if (innerId === BOUNDARY_SLOT_ID) {
@@ -424,7 +522,7 @@ function resolveProxied(file, def, prefix, innerId, widget, depth = 0) {
   }
   const node = (def.nodes ?? []).find((n) => String(n.id) === innerId);
   if (!node) return [];
-  if (node.type === "PrimitiveNode") {
+  if (node.type === "PrimitiveNode" || REROUTE_TYPES.has(node.type) || SET_NODE_TYPES.has(node.type)) {
     return consumersOf(def, innerId).flatMap((b) => resolveProxied(file, def, prefix, b.innerId, b.widget, depth + 1));
   }
   const nested = (file.definitions?.subgraphs ?? []).find((d) => String(d.id) === String(node.type));
@@ -471,7 +569,7 @@ export function extractAppMode(file, knownNodeIds) {
     if (!widget) continue;
     const nodeId = resolveId(parsed.nodeId);
     if (!nodeId) {
-      // ID 指向子图实例时，控件名就是边界口名，落到它在子图里接的节点上。
+      // ID 指向子图实例时，控件名就是子图端口名，落到它在子图里接的节点上。
       for (const binding of promotedBindings(file, parsed.nodeId, widget)) {
         if (inputs.some((i) => i.nodeId === binding.nodeId && i.widget === binding.widget)) continue;
         inputs.push(binding);

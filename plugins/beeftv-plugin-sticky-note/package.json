@@ -1,6 +1,6 @@
 {
   "name": "beeftv-plugin-sticky-note",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "在画布上放置可换色、可编辑的便签卡片，并支持创作助手直接创建和修改便签。",
   "type": "module",
   "license": "Apache-2.0",
