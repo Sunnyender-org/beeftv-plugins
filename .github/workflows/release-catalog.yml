@@ -1,6 +1,7 @@
 name: Release Plugin Catalog & Tarballs
 
 on:
+  pull_request:
   push:
     branches:
       - main
@@ -8,48 +9,26 @@ on:
       - "v*"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   validate-and-pack:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
           registry-url: "https://registry.npmjs.org"
       - name: Run plugin tests
         run: npm test
-      - name: Validate registry.json & dist SHA-256
-        run: |
-          node -e '
-            const fs = require("fs");
-            const crypto = require("crypto");
-            const path = require("path");
-            const reg = JSON.parse(fs.readFileSync("registry.json", "utf8"));
-            if (!Array.isArray(reg.plugins) || reg.plugins.length === 0) {
-              throw new Error("registry.json must contain plugins array");
-            }
-            const allEntries = [...reg.plugins, ...(Array.isArray(reg.builtins) ? reg.builtins : [])];
-            for (const p of allEntries) {
-              if (!p.id || !p.packageName || !p.version || !p.sha256 || !p.tarball) {
-                throw new Error("Invalid plugin entry: " + JSON.stringify(p));
-              }
-              const pkgPath = path.join("plugins", p.packageName, "package.json");
-              const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
-              if (pkg.beeftv?.id) {
-                throw new Error(`${pkgPath} must not set beeftv.id`);
-              }
-              if (pkg.name !== p.packageName || pkg.name !== p.id || pkg.version !== p.version) {
-                throw new Error(`Registry mismatch for ${p.id}: ${pkg.name}@${pkg.version}`);
-              }
-              const tgzPath = path.join("dist", `${p.packageName}-${p.version}.tgz`);
-              const sha = crypto.createHash("sha256").update(fs.readFileSync(tgzPath)).digest("hex");
-              if (sha !== p.sha256) {
-                throw new Error(`SHA-256 mismatch for ${tgzPath}: ${sha} !== ${p.sha256}`);
-              }
-            }
-            console.log("Validated", allEntries.length, "curated & builtin plugin(s) and dist tarballs.");
-          '
+      - name: Validate registry.json, partner metadata, & dist SHA-256
+        run: node ./scripts/validate-registry.mjs
       - name: Pack plugins
         run: |
           mkdir -p packages
@@ -82,6 +61,62 @@ jobs:
             fi
           done
           ls -lh packages/
+
+  publish-release:
+    needs: validate-and-pack
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+      - name: Ensure published GitHub Release with verified dist tarballs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          root_ver=$(node -e 'console.log(JSON.parse(require("fs").readFileSync("package.json", "utf8")).version)')
+          tag="v${root_ver}"
+          if rel_json=$(gh release view "$tag" --json isDraft,assets 2>/dev/null); then
+            is_draft=$(node -e 'console.log(Boolean(JSON.parse(process.argv[1]).isDraft))' "$rel_json")
+            if [ "$is_draft" = "true" ]; then
+              gh release upload "$tag" dist/*.tgz --clobber
+              gh release edit "$tag" --draft=false
+            else
+              mkdir -p /tmp/release-verify
+              gh release download "$tag" -D /tmp/release-verify --pattern "*.tgz"
+              for f in dist/*.tgz; do
+                base=$(basename "$f")
+                test -f "/tmp/release-verify/$base" || { gh release upload "$tag" "$f"; continue; }
+                want=$(sha256sum "$f" | awk '{print $1}')
+                got=$(sha256sum "/tmp/release-verify/$base" | awk '{print $1}')
+                if [ "$want" != "$got" ]; then
+                  echo "Refusing to overwrite published release asset $base (SHA mismatch $got != $want); bump package.json version instead" >&2
+                  exit 1
+                fi
+              done
+            fi
+          else
+            gh release create "$tag" dist/*.tgz --target "${GITHUB_SHA}" --title "$tag" --generate-notes
+          fi
+      - name: Purge jsDelivr @main registry cache
+        run: |
+          resp=$(curl -fsSL --retry 3 --retry-delay 2 --max-time 15 "https://purge.jsdelivr.net/gh/Sunnyender-org/beeftv-plugins@main/registry.json") || {
+            echo "::warning::jsDelivr purge request failed; clients fall back to GitHub raw and version freshness check"
+            exit 0
+          }
+          echo "$resp"
+          node -e '
+            const data = JSON.parse(process.argv[1]);
+            if (data.status && data.status !== "finished" && data.status !== "queued") {
+              console.warn("::warning::Unexpected jsDelivr purge status:", data.status);
+            }
+          ' "$resp"
       - name: Publish catalog and npm-listed plugins (if NPM_TOKEN is configured)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

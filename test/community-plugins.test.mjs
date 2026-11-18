@@ -7,6 +7,8 @@ import { join, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
+import { parseStrictPartnerBoundMs, validateCatalogRepository, validateStrictHTTPSUrl } from "../scripts/validate-registry.mjs";
+
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
 const pluginsRoot = resolve(repoRoot, "plugins");
 
@@ -735,7 +737,16 @@ test("media-conversion plugin transforms pixels, resolves renderable URLs, and m
   dispose();
 });
 
-test("registry.json entries match plugin manifests and dist tarballs without bare npm collisions", () => {
+test("registry.json entries match plugin manifests and dist tarballs without bare npm collisions", async () => {
+  await validateCatalogRepository(repoRoot);
+  assert.throws(() => validateStrictHTTPSUrl("http://hub.ll2.cn", "keysUrl"));
+  assert.throws(() => validateStrictHTTPSUrl("https://user:pass@hub.ll2.cn", "keysUrl"));
+  assert.throws(() => validateStrictHTTPSUrl("https://hub.ll2.cn#frag", "keysUrl"));
+  assert.throws(() => parseStrictPartnerBoundMs("2026-02-30", false));
+  assert.throws(() => parseStrictPartnerBoundMs("2026-11-03T00:00:00", false));
+  assert.throws(() => parseStrictPartnerBoundMs("March 5, 2026", false));
+  assert.ok(parseStrictPartnerBoundMs("2026-12-04", true) > parseStrictPartnerBoundMs("2026-12-04", false));
+
   const reg = JSON.parse(readFileSync(join(repoRoot, "registry.json"), "utf8"));
   assert.ok(Array.isArray(reg.plugins));
   assert.ok(Array.isArray(reg.builtins));
