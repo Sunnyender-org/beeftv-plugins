@@ -29,7 +29,8 @@ jobs:
             if (!Array.isArray(reg.plugins) || reg.plugins.length === 0) {
               throw new Error("registry.json must contain plugins array");
             }
-            for (const p of reg.plugins) {
+            const allEntries = [...reg.plugins, ...(Array.isArray(reg.builtins) ? reg.builtins : [])];
+            for (const p of allEntries) {
               if (!p.id || !p.packageName || !p.version || !p.sha256 || !p.tarball) {
                 throw new Error("Invalid plugin entry: " + JSON.stringify(p));
               }
@@ -47,7 +48,7 @@ jobs:
                 throw new Error(`SHA-256 mismatch for ${tgzPath}: ${sha} !== ${p.sha256}`);
               }
             }
-            console.log("Validated", reg.plugins.length, "curated plugin(s) and dist tarballs.");
+            console.log("Validated", allEntries.length, "curated & builtin plugin(s) and dist tarballs.");
           '
       - name: Pack plugins
         run: |
