@@ -74,6 +74,11 @@ const OFFICIAL_IDS = [
   "beeftv-plugin-sticky-note",
   "beeftv-plugin-ecommerce-hero",
 ];
+const BUILTIN_IDS = [
+  "beeftv-plugin-ll2",
+  "beeftv-plugin-ysdui",
+  "beeftv-plugin-market",
+];
 
 function walkFiles(dir, predicate) {
   const results = [];
@@ -91,7 +96,7 @@ function walkFiles(dir, predicate) {
 
 test("all plugins satisfy license, author, manifest keys, zero bare imports, and no banned wording", () => {
   const dirs = readdirSync(pluginsRoot).sort();
-  assert.deepEqual(dirs, [...OFFICIAL_IDS, ...COMMUNITY_DIRS].sort());
+  assert.deepEqual(dirs, [...OFFICIAL_IDS, ...BUILTIN_IDS, ...COMMUNITY_DIRS].sort());
 
   for (const dir of dirs) {
     const root = join(pluginsRoot, dir);
@@ -733,12 +738,15 @@ test("media-conversion plugin transforms pixels, resolves renderable URLs, and m
 test("registry.json entries match plugin manifests and dist tarballs without bare npm collisions", () => {
   const reg = JSON.parse(readFileSync(join(repoRoot, "registry.json"), "utf8"));
   assert.ok(Array.isArray(reg.plugins));
+  assert.ok(Array.isArray(reg.builtins));
   const pkgNames = reg.plugins.map((p) => p.packageName).sort();
   assert.deepEqual(pkgNames, [...OFFICIAL_IDS, ...COMMUNITY_DIRS].sort());
+  const builtinNames = reg.builtins.map((p) => p.packageName).sort();
+  assert.deepEqual(builtinNames, [...BUILTIN_IDS].sort());
 
   const tmpPackDir = mkdtempSync(join(tmpdir(), "beeftv-plugins-pack-"));
   try {
-    for (const entry of reg.plugins) {
+    for (const entry of [...reg.plugins, ...reg.builtins]) {
       const pluginDir = join(pluginsRoot, entry.packageName);
       const pkg = JSON.parse(readFileSync(join(pluginDir, "package.json"), "utf8"));
       assert.equal(entry.id, pkg.name, `registry id mismatch for ${entry.packageName}`);
