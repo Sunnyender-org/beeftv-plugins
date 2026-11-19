@@ -58,6 +58,38 @@
         "oneaxis",
         "multimodal"
       ]
+    },
+    {
+      "id": "beeftv-plugin-infistar",
+      "packageName": "beeftv-plugin-infistar",
+      "name": "无限星河 AI (Infistar)",
+      "version": "1.0.0",
+      "description": "无限星河 AI (Infistar) 官方合作伙伴插件，聚合 Claude、GPT、Gemini、DeepSeek、Qwen 及 Seedream、GPT Image、Gemini Image、Seedance、MiniMax H3、Wan、Kling 等 38 款多模态模型。",
+      "author": "BeefTV",
+      "category": "channel",
+      "partner": true,
+      "presetId": "infistar",
+      "from": "2026-11-19T00:00:00+08:00",
+      "until": "2026-12-20T00:00:00+08:00",
+      "keysUrl": "https://www.infistar.cc/register?aff=KBR9PG8Z&ref_source=link",
+      "websiteUrl": "https://www.infistar.cc/register?aff=KBR9PG8Z&ref_source=link",
+      "iconUrl": "https://cdn.jsdelivr.net/gh/Sunnyender-org/beeftv-plugins@v0.3.3/assets/partner-infistar.svg",
+      "promoText": "专属链接注册领 5 元体验额度 · 部分模型低至官方 0.1 折",
+      "recommended": true,
+      "repo": "https://github.com/Sunnyender-org/beeftv-plugins/tree/main/plugins/beeftv-plugin-infistar",
+      "homepage": "https://www.infistar.cc/register?aff=KBR9PG8Z&ref_source=link",
+      "readme": "https://raw.githubusercontent.com/Sunnyender-org/beeftv-plugins/main/plugins/beeftv-plugin-infistar/README.md",
+      "tarball": "https://github.com/Sunnyender-org/beeftv-plugins/releases/download/v0.3.3/beeftv-plugin-infistar-1.0.0.tgz",
+      "mirrorTarball": "https://cdn.jsdelivr.net/gh/Sunnyender-org/beeftv-plugins@v0.3.3/dist/beeftv-plugin-infistar-1.0.0.tgz",
+      "sha256": "4499c76bf6f3f9303315f8a0d9700606779de5d1d5f6950d6ba21878ddd22f7d",
+      "tags": [
+        "beeftv-plugin",
+        "infistar",
+        "multimodal",
+        "seedance",
+        "seedream",
+        "kling"
+      ]
     }
   ],
   "plugins": [
