@@ -79,6 +79,7 @@ const OFFICIAL_IDS = [
 const BUILTIN_IDS = [
   "beeftv-plugin-ll2",
   "beeftv-plugin-ysdui",
+  "beeftv-plugin-infistar",
   "beeftv-plugin-market",
 ];
 
@@ -734,6 +735,79 @@ test("media-conversion plugin transforms pixels, resolves renderable URLs, and m
 
   const canny = mod.transformPixels(new Uint8ClampedArray(6 * 6 * 4).fill(255), 6, 6, "edge-canny");
   assert.equal(canny.length, 6 * 6 * 4);
+  dispose();
+});
+
+test("infistar partner plugin exports valid preset, normalizes /v1 baseUrl, and activates settings panel", async () => {
+  const pkg = JSON.parse(readFileSync(join(pluginsRoot, "beeftv-plugin-infistar/package.json"), "utf8"));
+  const providerIds = (pkg.beeftv?.contributes?.providers || []).map((p) => p.id).sort();
+  assert.deepEqual(providerIds, [
+    "infistar-gemini-image",
+    "infistar-image",
+    "infistar-video",
+    "infistar-video-json",
+  ]);
+
+  const mod = await import("../plugins/beeftv-plugin-infistar/client/index.js");
+  assert.equal(mod.BUILTIN_SERVICE_PRESET.id, "infistar");
+  assert.equal(mod.BUILTIN_SERVICE_PRESET.partner, true);
+  assert.equal(mod.BUILTIN_SERVICE_PRESET.baseUrl, "https://infistar.cc");
+  assert.equal(mod.BUILTIN_SERVICE_PRESET.keysUrl, "https://www.infistar.cc/register?aff=KBR9PG8Z&ref_source=link");
+  assert.ok(mod.INFISTAR_PRESET_MODELS.length >= 30);
+
+  const allowedProtocols = new Set(["chat-completion", ...providerIds]);
+  for (const item of mod.INFISTAR_PRESET_MODELS) {
+    assert.ok(allowedProtocols.has(item.protocol), `unexpected protocol ${item.protocol} on ${item.model}`);
+  }
+
+  const channel = mod.buildInfistarModelChannel({
+    apiKey: "sk-test-placeholder",
+    baseUrl: "https://infistar.ai/v1/",
+  });
+  assert.equal(channel.id, "infistar");
+  assert.equal(channel.baseUrl, "https://infistar.ai");
+  assert.equal(channel.models.length, mod.INFISTAR_PRESET_MODELS.length);
+  assert.equal(channel.modelProfiles.length, mod.INFISTAR_PRESET_MODELS.length);
+
+  const upgraded = mod.upgradeInfistarModelProfile({
+    model: "MiniMax-H3",
+    protocol: "infistar-video",
+    capability: "video",
+    capabilityConfig: { version: 1, video: { resolutions: ["720p"], defaultResolution: "720p" } },
+  });
+  assert.equal(upgraded.capabilityConfig.video.defaultResolution, "768p");
+
+  const slots = [];
+  const React = createStubReact();
+  const dispose = mod.activate({
+    React,
+    config: { get: (_key, fallback = "") => fallback },
+    channels: {
+      list: () => [
+        {
+          id: "infistar",
+          name: "无限星河 AI",
+          baseUrl: "https://infistar.ai",
+          hasApiKey: true,
+          apiKey: "",
+          models: ["MiniMax-H3"],
+        },
+      ],
+    },
+    contribute: (slot, payload) => {
+      slots.push({ slot, payload });
+      return () => {};
+    },
+  });
+  assert.equal(slots.length, 1);
+  assert.equal(slots[0].slot, "app.settings");
+  const rendered = slots[0].payload.component({ config: {} });
+  assert.ok(rendered && rendered.type === "div");
+  const texts = findTextNodes(rendered).join(" ");
+  assert.match(texts, /无限星河 AI/);
+  const baseUrlInputs = findElements(rendered, (el) => el.props?.id === "infistar-plugin-base-url");
+  assert.equal(baseUrlInputs.length, 1);
+  assert.equal(baseUrlInputs[0].props.value, "https://infistar.ai");
   dispose();
 });
 
