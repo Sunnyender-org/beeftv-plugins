@@ -71,6 +71,7 @@ const COMMUNITY_DIRS = [
 ];
 const OFFICIAL_IDS = [
   "beeftv-plugin-character-replacement",
+  "beeftv-plugin-colab",
   "beeftv-plugin-comfyui",
   "beeftv-plugin-runninghub",
   "beeftv-plugin-sticky-note",

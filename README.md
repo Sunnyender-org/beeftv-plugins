@@ -25,6 +25,7 @@
 | 插件 ID | 名称 | 版本 | 说明 |
 | --- | --- | --- | --- |
 | `beeftv-plugin-character-replacement` | AI 角色替换工作室 | `0.1.6` | 面向短剧与漫剧的二阶段角色替换插件：关键帧角色替换（含 SVG 框位图引导）+ 视频角色替换（`replace_element`）+ 全片时间轴回插 |
+| `beeftv-plugin-colab` | Google Colab 云端生图 | `0.1.0` | 把 Google AI Pro / Ultra 附赠的 Colab 算力直接接进画布，零配置跑 MiniMax-H3-Image（原生 4K）与 MOSS-Image，支持用完即停与活跃会话核对 |
 | `beeftv-plugin-comfyui` | ComfyUI | `0.2.1` | 把本机或局域网里的 ComfyUI 接进 BeefTV，保存的工作流就是模型 |
 | `beeftv-plugin-runninghub` | RunningHub | `0.1.1` | 把 RunningHub 接进 BeefTV，工作流和 AI 应用就是模型 |
 | `beeftv-plugin-sticky-note` | 画布便签 | `0.1.2` | 画布便签入门样板插件，支持颜色切换与创作助手读写 |
