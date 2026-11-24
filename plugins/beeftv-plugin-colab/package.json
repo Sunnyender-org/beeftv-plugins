@@ -1,0 +1,64 @@
+{
+  "name": "beeftv-plugin-colab",
+  "version": "0.1.0",
+  "description": "把 Google AI Pro / Ultra 每月附赠的 200～2000 个 Colab 算力直接接进画布，零配置跑 MiniMax-H3-Image（原生 4K）与 MOSS-Image 生图、改图，用完自动关机不费算力。",
+  "type": "module",
+  "main": "./client/index.js",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sunnyender-org/beeftv-plugins.git",
+    "directory": "plugins/beeftv-plugin-colab"
+  },
+  "homepage": "https://github.com/Sunnyender-org/beeftv-plugins/tree/main/plugins/beeftv-plugin-colab",
+  "keywords": [
+    "beeftv-plugin",
+    "colab",
+    "google-colab",
+    "comfyui",
+    "minimax-h3-image",
+    "moss-image",
+    "image"
+  ],
+  "beeftv": {
+    "name": "Google Colab 云端生图",
+    "client": "./client/index.js",
+    "permissions": [
+      "generation.run",
+      "media.read",
+      "ui.slot"
+    ],
+    "contributes": {
+      "providers": [
+        {
+          "id": "colab",
+          "label": "Google Colab",
+          "module": "./provider.mjs",
+          "capabilities": [
+            "image"
+          ],
+          "scopes": [
+            "user.custom-channel",
+            "canvas",
+            "creation",
+            "agent"
+          ],
+          "baseUrl": "https://colab.research.google.com",
+          "auth": {
+            "type": "bearer",
+            "field": "apiKey"
+          }
+        }
+      ]
+    }
+  },
+  "files": [
+    "provider.mjs",
+    "lib",
+    "client",
+    "README.md",
+    "THIRD_PARTY_NOTICES.md",
+    "LICENSE"
+  ],
+  "author": "BeefTV"
+}

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-19",
+  "updatedAt": "2026-11-25",
   "builtins": [
     {
       "id": "beeftv-plugin-ll2",
@@ -95,7 +95,7 @@
       "id": "beeftv-plugin-market",
       "packageName": "beeftv-plugin-market",
       "name": "插件市场",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "description": "浏览官方推荐列表与 npm 社区插件，一键安装、更新与管理 BeefTV 插件。",
       "author": "BeefTV",
       "category": "system",
@@ -103,9 +103,9 @@
       "repo": "https://github.com/Sunnyender-org/beeftv-plugins/tree/main/plugins/beeftv-plugin-market",
       "homepage": "https://github.com/Sunnyender-org/beeftv-plugins/tree/main/plugins/beeftv-plugin-market",
       "readme": "https://raw.githubusercontent.com/Sunnyender-org/beeftv-plugins/main/plugins/beeftv-plugin-market/README.md",
-      "tarball": "https://github.com/Sunnyender-org/beeftv-plugins/releases/download/v0.3.3/beeftv-plugin-market-0.1.5.tgz",
-      "mirrorTarball": "https://cdn.jsdelivr.net/gh/Sunnyender-org/beeftv-plugins@v0.3.3/dist/beeftv-plugin-market-0.1.5.tgz",
-      "sha256": "5e6d99188328b677c2ff8762a735abc70d9a5112cd6bc9179a4ecb950dea1605",
+      "tarball": "https://github.com/Sunnyender-org/beeftv-plugins/releases/download/v0.3.4/beeftv-plugin-market-0.1.6.tgz",
+      "mirrorTarball": "https://cdn.jsdelivr.net/gh/Sunnyender-org/beeftv-plugins@v0.3.4/dist/beeftv-plugin-market-0.1.6.tgz",
+      "sha256": "7189bd7ec1c2cbe17460a5599e6ac05a8cbf64819d8404357dc641f7dc788480",
       "tags": [
         "beeftv-plugin",
         "market"
@@ -134,6 +134,29 @@
         "时间轴回插",
         "助手工具",
         "技能"
+      ]
+    },
+    {
+      "id": "beeftv-plugin-colab",
+      "packageName": "beeftv-plugin-colab",
+      "npm": "beeftv-plugin-colab",
+      "name": "Google Colab 云端生图",
+      "version": "0.1.0",
+      "description": "把 Google AI Pro / Ultra 每月附赠的 200～2000 个 Colab 算力直接接进画布，零配置跑 MiniMax-H3-Image（原生 4K）与 MOSS-Image 生图、改图，用完自动关机不费算力。",
+      "author": "BeefTV",
+      "category": "生成服务",
+      "recommended": true,
+      "repo": "https://github.com/Sunnyender-org/beeftv-plugins/tree/main/plugins/beeftv-plugin-colab",
+      "readme": "https://raw.githubusercontent.com/Sunnyender-org/beeftv-plugins/main/plugins/beeftv-plugin-colab/README.md",
+      "tarball": "https://github.com/Sunnyender-org/beeftv-plugins/releases/download/v0.3.4/beeftv-plugin-colab-0.1.0.tgz",
+      "mirrorTarball": "https://cdn.jsdelivr.net/gh/Sunnyender-org/beeftv-plugins@v0.3.4/dist/beeftv-plugin-colab-0.1.0.tgz",
+      "sha256": "195cd684f09570b6fa376e3394daa737551a90ba95affa5ad7981a35b6b4bc3b",
+      "tags": [
+        "Google Colab",
+        "免费算力",
+        "MiniMax-H3",
+        "MOSS-Image",
+        "图片"
       ]
     },
     {
