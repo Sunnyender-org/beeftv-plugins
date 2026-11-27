@@ -1,0 +1,21 @@
+{
+  "name": "beeftv-plugin-haryai",
+  "version": "0.1.0",
+  "description": "填一个 HaryAI API Key，一键把 HaryAI 的视频、图片和对话模型同步到 BeefTV 的模型服务。",
+  "type": "module",
+  "main": "./client/index.js",
+  "files": ["client", "README.md", "LICENSE"],
+  "keywords": ["beeftv-plugin", "haryai", "seedance", "seedream", "nano-banana", "deepseek"],
+  "homepage": "https://github.com/haryai-com/beeftv-plugin-haryai",
+  "repository": { "type": "git", "url": "https://github.com/haryai-com/beeftv-plugin-haryai.git" },
+  "author": { "name": "HaryAI", "email": "support@haryai.com" },
+  "license": "Apache-2.0",
+  "scripts": {
+    "snapshot": "node scripts/snapshot.mjs"
+  },
+  "beeftv": {
+    "name": "HaryAI",
+    "client": "./client/index.js",
+    "permissions": ["settings.write", "ui.slot"]
+  }
+}

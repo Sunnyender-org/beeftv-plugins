@@ -1,6 +1,6 @@
 {
   "name": "beeftv-plugin-catalog",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Official BeefTV curated plugin catalog (mirrored to npmmirror & jsDelivr for mainland China access)",
   "scripts": {
     "test": "node --test test/*.test.mjs"

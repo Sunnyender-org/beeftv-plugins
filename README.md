@@ -31,6 +31,12 @@
 | `beeftv-plugin-sticky-note` | 画布便签 | `0.1.2` | 画布便签入门样板插件，支持颜色切换与创作助手读写 |
 | `beeftv-plugin-ecommerce-hero` | 一键商品主图 | `0.1.2` | 上传商品白底图/实拍图，一键编排电商主图生成节点 |
 
+### 服务商插件（Apache-2.0，由服务商维护）
+
+| 插件 ID | 名称 | 版本 | 说明 |
+| --- | --- | --- | --- |
+| `beeftv-plugin-haryai` | HaryAI | `0.1.0` | 填一个 HaryAI API Key，一键把 Seedance 2.5、Seedream 5.5、Nano Banana 和 DeepSeek 同步到模型服务 |
+
 ### 开源社区插件（MIT，署名 `开源社区`）
 
 | 插件 ID | 名称 | 版本 | 说明 |
