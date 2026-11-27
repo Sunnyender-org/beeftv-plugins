@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-25",
+  "updatedAt": "2026-11-27",
   "builtins": [
     {
       "id": "beeftv-plugin-ll2",
@@ -183,6 +183,30 @@
         "图片",
         "视频",
         "音频"
+      ]
+    },
+    {
+      "id": "beeftv-plugin-haryai",
+      "packageName": "beeftv-plugin-haryai",
+      "name": "HaryAI",
+      "version": "0.1.0",
+      "description": "填一个 HaryAI API Key，一键把 HaryAI 的视频、图片和对话模型（Seedance 2.5、Seedream 5.5、Nano Banana、DeepSeek）同步到模型服务。",
+      "author": "HaryAI",
+      "category": "生成服务",
+      "recommended": false,
+      "repo": "https://github.com/Sunnyender-org/beeftv-plugins/tree/main/plugins/beeftv-plugin-haryai",
+      "readme": "https://raw.githubusercontent.com/Sunnyender-org/beeftv-plugins/main/plugins/beeftv-plugin-haryai/README.md",
+      "tarball": "https://github.com/Sunnyender-org/beeftv-plugins/releases/download/v0.3.5/beeftv-plugin-haryai-0.1.0.tgz",
+      "mirrorTarball": "https://cdn.jsdelivr.net/gh/Sunnyender-org/beeftv-plugins@v0.3.5/dist/beeftv-plugin-haryai-0.1.0.tgz",
+      "sha256": "59f561ffb581c06bc29de0da499ec6d50945f2c71275a4408e1b91b320e6a987",
+      "tags": [
+        "HaryAI",
+        "Seedance 2.5",
+        "Seedream",
+        "Nano Banana",
+        "DeepSeek",
+        "视频",
+        "图片"
       ]
     },
     {

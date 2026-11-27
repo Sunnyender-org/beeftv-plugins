@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-25",
+  "updatedAt": "2026-11-27",
   "builtins": [
     {
       "id": "beeftv-plugin-ll2",
@@ -95,7 +95,7 @@
       "id": "beeftv-plugin-market",
       "packageName": "beeftv-plugin-market",
       "name": "插件市场",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "description": "浏览官方推荐列表与 npm 社区插件，一键安装、更新与管理 BeefTV 插件。",
       "author": "BeefTV",
       "category": "system",
@@ -103,9 +103,9 @@
       "repo": "https://github.com/Sunnyender-org/beeftv-plugins/tree/main/plugins/beeftv-plugin-market",
       "homepage": "https://github.com/Sunnyender-org/beeftv-plugins/tree/main/plugins/beeftv-plugin-market",
       "readme": "https://raw.githubusercontent.com/Sunnyender-org/beeftv-plugins/main/plugins/beeftv-plugin-market/README.md",
-      "tarball": "https://github.com/Sunnyender-org/beeftv-plugins/releases/download/v0.3.4/beeftv-plugin-market-0.1.6.tgz",
-      "mirrorTarball": "https://cdn.jsdelivr.net/gh/Sunnyender-org/beeftv-plugins@v0.3.4/dist/beeftv-plugin-market-0.1.6.tgz",
-      "sha256": "7189bd7ec1c2cbe17460a5599e6ac05a8cbf64819d8404357dc641f7dc788480",
+      "tarball": "https://github.com/Sunnyender-org/beeftv-plugins/releases/download/v0.3.5/beeftv-plugin-market-0.1.7.tgz",
+      "mirrorTarball": "https://cdn.jsdelivr.net/gh/Sunnyender-org/beeftv-plugins@v0.3.5/dist/beeftv-plugin-market-0.1.7.tgz",
+      "sha256": "8d29bfa1265fa1363ae05f9e371c3e6736aba59148f04b88fa530d5d211e1f11",
       "tags": [
         "beeftv-plugin",
         "market"
@@ -203,6 +203,30 @@
         "图片",
         "视频",
         "音频"
+      ]
+    },
+    {
+      "id": "beeftv-plugin-haryai",
+      "packageName": "beeftv-plugin-haryai",
+      "name": "HaryAI",
+      "version": "0.1.0",
+      "description": "填一个 HaryAI API Key，一键把 HaryAI 的视频、图片和对话模型（Seedance 2.5、Seedream 5.5、Nano Banana、DeepSeek）同步到模型服务。",
+      "author": "HaryAI",
+      "category": "生成服务",
+      "recommended": false,
+      "repo": "https://github.com/Sunnyender-org/beeftv-plugins/tree/main/plugins/beeftv-plugin-haryai",
+      "readme": "https://raw.githubusercontent.com/Sunnyender-org/beeftv-plugins/main/plugins/beeftv-plugin-haryai/README.md",
+      "tarball": "https://github.com/Sunnyender-org/beeftv-plugins/releases/download/v0.3.5/beeftv-plugin-haryai-0.1.0.tgz",
+      "mirrorTarball": "https://cdn.jsdelivr.net/gh/Sunnyender-org/beeftv-plugins@v0.3.5/dist/beeftv-plugin-haryai-0.1.0.tgz",
+      "sha256": "59f561ffb581c06bc29de0da499ec6d50945f2c71275a4408e1b91b320e6a987",
+      "tags": [
+        "HaryAI",
+        "Seedance 2.5",
+        "Seedream",
+        "Nano Banana",
+        "DeepSeek",
+        "视频",
+        "图片"
       ]
     },
     {

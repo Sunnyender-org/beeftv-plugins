@@ -77,6 +77,8 @@ const OFFICIAL_IDS = [
   "beeftv-plugin-sticky-note",
   "beeftv-plugin-ecommerce-hero",
 ];
+// Third-party model-provider plugins maintained by the provider (Apache-2.0).
+const PROVIDER_IDS = ["beeftv-plugin-haryai"];
 const BUILTIN_IDS = [
   "beeftv-plugin-ll2",
   "beeftv-plugin-ysdui",
@@ -100,7 +102,7 @@ function walkFiles(dir, predicate) {
 
 test("all plugins satisfy license, author, manifest keys, zero bare imports, and no banned wording", () => {
   const dirs = readdirSync(pluginsRoot).sort();
-  assert.deepEqual(dirs, [...OFFICIAL_IDS, ...BUILTIN_IDS, ...COMMUNITY_DIRS].sort());
+  assert.deepEqual(dirs, [...OFFICIAL_IDS, ...PROVIDER_IDS, ...BUILTIN_IDS, ...COMMUNITY_DIRS].sort());
 
   for (const dir of dirs) {
     const root = join(pluginsRoot, dir);
@@ -826,7 +828,7 @@ test("registry.json entries match plugin manifests and dist tarballs without bar
   assert.ok(Array.isArray(reg.plugins));
   assert.ok(Array.isArray(reg.builtins));
   const pkgNames = reg.plugins.map((p) => p.packageName).sort();
-  assert.deepEqual(pkgNames, [...OFFICIAL_IDS, ...COMMUNITY_DIRS].sort());
+  assert.deepEqual(pkgNames, [...OFFICIAL_IDS, ...PROVIDER_IDS, ...COMMUNITY_DIRS].sort());
   const builtinNames = reg.builtins.map((p) => p.packageName).sort();
   assert.deepEqual(builtinNames, [...BUILTIN_IDS].sort());
 
